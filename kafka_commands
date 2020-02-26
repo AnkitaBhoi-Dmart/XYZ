@@ -1,0 +1,70 @@
+kafka commands 
+
+Start kafka server
+./bin/kafka-server-start.sh config/server.properties
+
+
+Topic creation:
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 5 --topic test
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 5 --topic frontendapidlcustomerfeedback
+
+
+List of topic:
+bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+
+start producer to produce message:
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+
+start consumer to recieve message:
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server 10.0.27.161:19092,10.0.27.161:29092,10.0.27.161:39092 --topic frontendapidlcustomerfeedback --from-beginning
+
+
+kafka to cassandra pipeline:
+https://dzone.com/articles/data-pipeline-send-logs-from-kafka-to-cassandra
+
+
+export BOOTSTRAP_SERVERS=10.0.27.161:19092,10.0.27.161:29092,10.0.27.161:39092
+export SOURCE_TOPIC=frontendapidlcustomerfeedback
+export TARGET_TOPIC=trip
+
+kafkacat -C -b $BOOTSTRAP_SERVERS -o beginning -e -t $SOURCE_TOPIC  | kafkacat -P -b $BOOTSTRAP_SERVERS  -t $TARGET_TOPIC
+
+
+
+bin/kafka-run-class.sh kafka.tools.MirrorMaker--consumer.config consumer.properties--producer.config producer.properties --whitelist frontendapidlcustomerfeedback
+
+
+bin/kafka-mirror-maker.sh --consumer.config sourceCluster1Consumer.config --num.streams 1 --producer.config targetClusterProducer.config --whitelist="frontendapidlcustomerfeedback"
+
+
+
+bin/kafka-mirror-maker.sh --consumer.config consumer.properties --producer.config producer.properties --num.streams 3 --whitelist="frontendapidlcustomerfeedback"
+
+
+bin/kafka-mirror-maker.sh --consumer.config /home/dmart/Documents/kafka_2.12-2.2.1/config/consumer.properties --producer.config /home/dmart/Documents/kafka_2.12-2.2.1/config/producer.properties --new.consumer --num.streams=1 --whitelist "frontendapidlcustomerfeedback"
+
+
+bin/kafka-mirror-maker.sh --consumer.config ./config/mirrormaker_consumer_pdc.properties --num.streams 2 --producer.config ./config/mirrormaker_producer.properties --whitelist="frontendapidlcustomerfeedback"
+
+bin/kafka-mirror-maker.sh --consumer.config ./config/mirrormaker_consumer_pdc.properties --num.streams 2 --producer.config ./config/mirrormaker_producer.properties --whitelist="trip"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
